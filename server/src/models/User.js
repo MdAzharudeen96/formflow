@@ -16,6 +16,13 @@ const userSchema = new mongoose.Schema({
   passwordHash: {
     type: String,
     required: true,
+    select: false,
+  },
+  role: {
+    type: String,
+    enum: ['admin'],
+    default: 'admin',
+    required: true,
   },
   createdAt: {
     type: Date,
