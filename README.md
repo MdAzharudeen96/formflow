@@ -5,15 +5,25 @@ admin approval system.
 
 ## Project Status
 
-Phase 0 - Product and architecture foundation.
+Phase 2 - MongoDB and data model setup.
 
 The complete product requirements, user journeys, lifecycle rules, UI/UX
 direction, architecture, security requirements, and phased roadmap are defined
 in [GEMINI.md](GEMINI.md).
 
-No application code has been implemented yet. Phase 1 will establish the React
-and Vite frontend, Node.js and Express backend, shared development scripts,
-environment configuration, and a basic health-check connection between them.
+The React/Vite frontend and Express backend foundation are in place. Phase 2
+adds the MongoDB connection and Mongoose models for users, forms, and
+submissions.
+
+## MongoDB Setup
+
+Create `server/.env` or a root `.env` file based on `.env.example` and set
+`MONGODB_URI` to your MongoDB connection string. Keep the connection string
+private; `.env` files are ignored by Git.
+
+Start the backend with `npm run start --workspace server`. It connects to
+MongoDB before listening on port 3000, and `GET /api/health` verifies the API
+is running.
 
 ## Planned Technology
 
@@ -24,15 +34,14 @@ environment configuration, and a basic health-check connection between them.
 - React Hook Form
 - Lucide React
 - Node.js and Express
-- PostgreSQL
+- MongoDB and Mongoose
 
-## Phase 0 Boundary
+## Phase 2 Boundary
 
-This phase is specification-only. Do not add frontend components, backend
-routes, database tables, authentication, form-builder functionality, public
-forms, or submission functionality until the relevant implementation phase is
-requested.
+This phase adds database configuration and models only. Authentication, REST
+routes, form-builder functionality, public forms, and submission functionality
+belong to later phases.
 
 ## Next Phase
 
-Phase 1 - Project Foundation and Development Environment Setup.
+Phase 3 - Backend Foundation.
