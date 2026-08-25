@@ -63,7 +63,8 @@ The project should demonstrate real-world full-stack development practices inclu
 - Vite
 - Node.js
 - Express.js
-- PostgreSQL
+- MongoDB
+- Mongoose
 - REST APIs
 - Authentication
 - Authorization
@@ -118,8 +119,8 @@ DO NOT:
 - Create React pages.
 - Create Express routes.
 - Create controllers.
-- Create database tables.
-- Create database migrations.
+- Create database collections.
+- Create database setup scripts.
 - Implement authentication.
 - Implement APIs.
 - Install application dependencies.
@@ -992,7 +993,8 @@ Use:
 
 - Node.js
 - Express.js
-- PostgreSQL
+- MongoDB
+- Mongoose
 
 Use the following architecture:
 
@@ -1030,31 +1032,61 @@ Do not mix frontend and backend responsibilities.
 
 # 37. DATABASE DIRECTION
 
-Use PostgreSQL.
+Use MongoDB with Mongoose.
 
-Core entities:
+Keep the database architecture simple and use these collections:
 
-    users
-    forms
-    form_fields
-    submissions
-    submission_answers
+  users
+  forms
+  submissions
 
-Conceptual relationship:
+User document:
 
-    users
-       ↓
-    forms
-       ↓
-    form_fields
+  _id
+  name
+  email
+  passwordHash
+  createdAt
 
-    forms
-       ↓
-    submissions
-       ↓
-    submission_answers
+Form document:
 
-The exact database implementation belongs to Phase 2.
+  _id
+  userId
+  title
+  description
+  status
+  fields
+  createdAt
+  updatedAt
+
+The `fields` array stores flexible dynamic field definitions. Each field can
+contain:
+
+- `type`
+- `label`
+- `name`
+- `placeholder`
+- `helpText`
+- `required`
+- `options`
+- Validation rules
+- `order`
+
+Submission document:
+
+  _id
+  formId
+  data
+  status
+  submittedAt
+  reviewedBy
+  reviewedAt
+  rejectionReason
+
+The `data` object stores submitted values dynamically. User, form, and
+submission references should use MongoDB ObjectId values through Mongoose.
+
+The exact Mongoose model implementation belongs to Phase 2.
 
 Do not implement the database during Phase 0.
 
@@ -1094,7 +1126,7 @@ Never commit secrets.
 
 Never expose:
 
-- Database passwords.
+- MongoDB credentials.
 - JWT secrets.
 - API keys.
 - Private credentials.
@@ -1111,7 +1143,7 @@ Never commit `.env`.
 
 Example conceptual variables:
 
-    DATABASE_URL=
+    MONGODB_URI=
     JWT_SECRET=
     CLIENT_URL=
     SERVER_PORT=
@@ -1239,16 +1271,16 @@ Do NOT build:
 
 ---
 
-## PHASE 2 — DATABASE
+## PHASE 2 — DATABASE AND DATA MODEL SETUP — MONGODB
 
 Build:
 
-- PostgreSQL connection.
-- Database configuration.
-- Schema.
-- Migrations.
-- Required relationships.
-- Initial seed data if required.
+- MongoDB connection.
+- Mongoose setup.
+- User model.
+- Form model.
+- Submission model.
+- Database connection verification.
 
 ---
 
@@ -1447,7 +1479,7 @@ For example:
 
 If the task is Phase 1, do NOT implement:
 
-- PostgreSQL.
+- MongoDB.
 - JWT.
 - Login.
 - Form Builder.
