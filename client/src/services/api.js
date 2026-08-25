@@ -28,3 +28,23 @@ export async function logoutRequest() {
   const { data } = await api.post('/auth/logout');
   return data;
 }
+
+export async function getForms() {
+  const { data } = await api.get('/forms');
+  return data;
+}
+
+export async function createForm(form) {
+  const { data } = await api.post('/forms', form);
+  return data;
+}
+
+export async function getForm(formId) {
+  const { data } = await api.get(`/forms/${formId}`);
+  return data;
+}
+
+export async function updateForm(formId, form) {
+  const { data } = await api.put(`/forms/${formId}`, form);
+  return data;
+}

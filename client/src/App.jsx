@@ -5,6 +5,8 @@ import Login from './pages/Login';
 import Dashboard from './pages/admin/Dashboard';
 import Forms from './pages/admin/Forms';
 import Submissions from './pages/admin/Submissions';
+import NewForm from './pages/admin/NewForm';
+import EditForm from './pages/admin/EditForm';
 
 function usePathname() {
   const [pathname, setPathname] = useState(window.location.pathname);
@@ -39,7 +41,8 @@ function AppRoutes() {
     return isAuthenticated ? <NavigateToAdmin /> : <Login />;
   }
 
-  const page = pathname === '/admin/forms' ? <Forms /> : pathname === '/admin/submissions' ? <Submissions /> : <Dashboard />;
+  const editMatch = pathname.match(/^\/admin\/forms\/([^/]+)\/edit$/);
+  const page = pathname === '/admin/forms' ? <Forms /> : pathname === '/admin/forms/new' ? <NewForm /> : editMatch ? <EditForm formId={editMatch[1]} /> : pathname === '/admin/submissions' ? <Submissions /> : <Dashboard />;
 
   return pathname.startsWith('/admin') ? <ProtectedRoute>{page}</ProtectedRoute> : <NavigateToAdmin />;
 }

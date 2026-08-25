@@ -4,37 +4,33 @@ const fieldSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ['shortText', 'longText', 'email', 'number', 'phone', 'date', 'select', 'radio', 'checkbox', 'file'],
+    enum: ['text', 'number', 'dropdown', 'date'],
   },
   label: {
     type: String,
     required: true,
     trim: true,
   },
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  placeholder: String,
-  helpText: String,
   required: {
     type: Boolean,
     default: false,
   },
-  options: [String],
-  validation: {
-    type: mongoose.Schema.Types.Mixed,
-    default: {},
-  },
-  order: {
-    type: Number,
-    required: true,
+  options: {
+    type: [String],
+    required: function requiredOptions() {
+      return this.type === 'dropdown';
+    },
+    validate: {
+      validator: function validOptions(options) {
+        return this.type !== 'dropdown' || options?.length > 0 && options.every((option) => option.trim().length > 0);
+      },
+      message: 'Dropdown fields require at least one non-empty option',
+    },
   },
 }, { _id: false });
 
 const formSchema = new mongoose.Schema({
-  userId: {
+  createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
@@ -48,11 +44,6 @@ const formSchema = new mongoose.Schema({
     type: String,
     trim: true,
     default: '',
-  },
-  status: {
-    type: String,
-    enum: ['draft', 'published', 'closed'],
-    default: 'draft',
   },
   fields: {
     type: [fieldSchema],
