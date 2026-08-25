@@ -145,6 +145,23 @@ textarea:focus, select:focus { border-color: #6f9b70; box-shadow: 0 0 0 3px rgba
 .form-list-meta span { color: #2f6652; font-size: 12px; font-weight: 750; }
 .form-list-meta small { color: #9ca79f; font-size: 10px; margin-top: 6px; }
 .form-list-meta .text-button { display: inline-block; margin-top: 8px; padding: 0; }
+.public-form-page { min-height: 100vh; padding: 48px 20px; background: #f3f5f0; }
+.public-form-card { max-width: 680px; margin: 0 auto; background: #fff; border: 1px solid #e0e7df; border-radius: 8px; overflow: hidden; }
+.public-form-header { padding: 34px 34px 28px; border-bottom: 1px solid #e8eee8; background: #fbfcfa; }
+.public-brand { display: inline-block; color: #2f6652; font-size: 14px; font-weight: 800; margin-bottom: 44px; }
+.public-form-header h1 { margin: 11px 0 8px; font-size: 32px; line-height: 1.1; letter-spacing: -.05em; }
+.public-form-header p { color: #78847c; margin: 0; font-size: 14px; line-height: 1.6; }
+.public-form { display: grid; gap: 19px; padding: 30px 34px 34px; }
+.public-field { display: grid; gap: 8px; }
+.public-field label { margin: 0; font-size: 13px; }
+.required-mark { color: #b74539; margin-left: 3px; }
+.field-error { color: #b74539; font-size: 11px; }
+.public-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; padding-top: 22px; border-top: 1px solid #e8eee8; }
+.public-action { min-width: 125px; }
+.form-success { color: #2f6652; background: #edf7e9; padding: 11px 13px; border-radius: 5px; font-size: 12px; margin: 0; }
+.public-message { max-width: 480px; margin: 15vh auto; text-align: center; background: #fff; padding: 50px 30px; border: 1px solid #e0e7df; border-radius: 8px; }
+.public-message h1 { font-size: 22px; margin: 0 0 20px; }
+.public-message a { color: #2f6652; font-size: 13px; font-weight: 750; }
 
  .loading-screen { min-height: 100vh; display: grid; place-content: center; justify-items: center; gap: 15px; color: #728078; font-size: 12px; }
  .loading-mark { width: 38px; height: 38px; display: grid; place-items: center; background: #19372e; color: #d9edc9; border-radius: 10px; font-weight: 800; }
@@ -176,6 +193,13 @@ textarea:focus, select:focus { border-color: #6f9b70; box-shadow: 0 0 0 3px rgba
   .field-grid { grid-template-columns: 1fr; gap: 4px; }
   .form-list-item { align-items: start; flex-direction: column; }
   .form-list-meta { text-align: left; }
+  .public-form-page { padding: 20px 12px; }
+  .public-form-header { padding: 25px 20px 22px; }
+  .public-brand { margin-bottom: 30px; }
+  .public-form-header h1 { font-size: 27px; }
+  .public-form { padding: 24px 20px 25px; }
+  .public-actions { flex-direction: column-reverse; }
+  .public-action { width: 100%; }
 }
 
 @media (max-width: 420px) {

@@ -5,15 +5,15 @@ admin approval system.
 
 ## Project Status
 
-Phase 4 - Authentication and authorization.
+Phase 7 - Dynamic form rendering and data collection.
 
 The complete product requirements, user journeys, lifecycle rules, UI/UX
 direction, architecture, security requirements, and phased roadmap are defined
 in [GEMINI.md](GEMINI.md).
 
 The React/Vite frontend and Express backend foundation are in place. The
-backend now includes MongoDB/Mongoose data models and simple admin
-authentication with JWT.
+backend now includes MongoDB/Mongoose data models, admin authentication with
+JWT, and anonymous dynamic form submissions with draft and submitted states.
 
 ## MongoDB Setup
 
@@ -36,11 +36,11 @@ MongoDB before listening on port 3000.
 - Node.js and Express
 - MongoDB and Mongoose
 
-## Phase 4 Boundary
+## Phase 7 Boundary
 
-This phase adds backend authentication only. Dashboard UI, form management,
-public forms, and submission workflows belong to later phases.
+This phase adds dynamic public form rendering, draft saving, and submission
+validation. Admin review and approval workflows belong to later phases.
 
 ## Next Phase
 
-Phase 5 - Admin Dashboard.
+Phase 8 - Form publishing.

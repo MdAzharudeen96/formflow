@@ -27,7 +27,7 @@ const fieldSchema = new mongoose.Schema({
       message: 'Dropdown fields require at least one non-empty option',
     },
   },
-}, { _id: false });
+});
 
 const formSchema = new mongoose.Schema({
   createdBy: {

@@ -48,3 +48,18 @@ export async function updateForm(formId, form) {
   const { data } = await api.put(`/forms/${formId}`, form);
   return data;
 }
+
+export async function getPublicForm(formId) {
+  const { data } = await api.get(`/public/forms/${formId}`);
+  return data;
+}
+
+export async function createSubmission(submission) {
+  const { data } = await api.post('/submissions', submission);
+  return data;
+}
+
+export async function submitSubmission(submissionId) {
+  const { data } = await api.post(`/submissions/${submissionId}/submit`);
+  return data;
+}

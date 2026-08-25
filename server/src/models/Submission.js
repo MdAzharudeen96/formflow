@@ -13,28 +13,10 @@ const submissionSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'accepted', 'rejected'],
-    default: 'pending',
+    enum: ['draft', 'submitted'],
+    default: 'draft',
   },
-  submittedAt: {
-    type: Date,
-    default: Date.now,
-  },
-  reviewedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    default: null,
-  },
-  reviewedAt: {
-    type: Date,
-    default: null,
-  },
-  rejectionReason: {
-    type: String,
-    trim: true,
-    default: null,
-  },
-});
+}, { timestamps: true });
 
 const Submission = mongoose.model('Submission', submissionSchema);
 
