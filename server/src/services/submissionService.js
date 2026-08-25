@@ -110,3 +110,62 @@ export async function submitSubmission(submissionId) {
   submission.status = 'submitted';
   return submission.save();
 }
+
+export async function getAdminSubmissions() {
+  return Submission.find()
+    .populate('formId', 'title')
+    .sort({ createdAt: -1 });
+}
+
+export async function getAdminSubmission(submissionId) {
+  return Submission.findById(submissionId)
+    .populate('formId', 'title fields');
+}
+
+export async function approveSubmission(submissionId) {
+  const submission = await Submission.findById(submissionId);
+
+  if (!submission) {
+    const error = new Error('Submission not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (submission.status !== 'submitted') {
+    const error = new Error('Only submitted forms can be approved');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  submission.status = 'approved';
+  await submission.save();
+
+  return submission;
+}
+
+export async function rejectSubmission(submissionId, comment) {
+  const submission = await Submission.findById(submissionId);
+
+  if (!submission) {
+    const error = new Error('Submission not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (submission.status !== 'submitted') {
+    const error = new Error('Only submitted forms can be rejected');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (!comment?.trim()) {
+    const error = new Error('Rejection comment is required');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  submission.status = 'rejected';
+  await submission.save();
+
+  return submission;
+}

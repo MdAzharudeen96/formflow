@@ -63,3 +63,23 @@ export async function submitSubmission(submissionId) {
   const { data } = await api.post(`/submissions/${submissionId}/submit`);
   return data;
 }
+
+export async function getAdminSubmissions() {
+  const { data } = await api.get('/admin/submissions');
+  return data;
+}
+
+export async function getAdminSubmission(submissionId) {
+  const { data } = await api.get(`/admin/submissions/${submissionId}`);
+  return data;
+}
+
+export async function approveSubmission(submissionId) {
+  const { data } = await api.put(`/admin/submissions/${submissionId}/approve`);
+  return data;
+}
+
+export async function rejectSubmission(submissionId, comment) {
+  const { data } = await api.put(`/admin/submissions/${submissionId}/reject`, {comment});
+  return data;
+}

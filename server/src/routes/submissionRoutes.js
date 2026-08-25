@@ -1,8 +1,13 @@
 import { Router } from 'express';
 import {
+  getPublicFormController,
   createSubmission,
   getSubmissionController,
   submitSubmissionController,
+  getAdminSubmissionsController,
+  getAdminSubmissionController,
+  approveSubmissionController,
+  rejectSubmissionController,
 } from '../controllers/submissionController.js';
 
 const router = Router();

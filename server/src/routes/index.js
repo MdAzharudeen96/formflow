@@ -5,6 +5,7 @@ import formRoutes from './formRoutes.js';
 import healthRoutes from './healthRoutes.js';
 import publicFormRoutes from './publicFormRoutes.js';
 import submissionRoutes from './submissionRoutes.js';
+import adminSubmissionRoutes from './adminSubmissionRoutes.js';
 import { createPlaceholderRouter } from './placeholderRoutes.js';
 
 const router = Router();
@@ -12,6 +13,7 @@ const router = Router();
 router.use('/health', healthRoutes);
 router.use('/auth', authRoutes);
 router.use('/forms', formRoutes);
+router.use('/admin/submissions', adminSubmissionRoutes);
 router.use('/admin', adminRoutes);
 router.use('/public/forms', publicFormRoutes);
 router.use('/public/submissions', createPlaceholderRouter('Public submission APIs'));
