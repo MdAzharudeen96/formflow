@@ -3,6 +3,7 @@ import {
   getPublicForm,
   createDraft,
   getSubmission,
+  updateSubmission,
   submitSubmission,
   getAdminSubmissions,
   getAdminSubmission,
@@ -18,6 +19,19 @@ export async function getPublicFormController(request, response) {
 export async function createSubmission(request, response) {
   const submission = await createDraft(request.body?.formId, request.body?.data);
   return sendSuccess(response, 'Draft saved successfully', { submission });
+}
+
+export async function updateSubmissionController(request, response) {
+  const submission = await updateSubmission(
+    request.params.id,
+    request.body?.data
+  );
+
+  return sendSuccess(
+    response,
+    'Submission updated successfully',
+    { submission }
+  );
 }
 
 export async function getSubmissionController(request, response) {

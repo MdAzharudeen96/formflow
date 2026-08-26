@@ -43,7 +43,10 @@ export default function Sidebar({ isOpen, onClose, currentPath }) {
         <div className="sidebar-footer">
           <div className="workspace-note">
             <span className="status-dot" />
-            <span><strong>Workspace ready</strong><small>Phase 5 foundation</small></span>
+            <span>
+              <strong>Workspace ready</strong>
+              {/* <small>Phase 5 foundation</small> */}
+            </span>
           </div>
           <button className="logout-button" type="button" onClick={handleLogout}>Log out</button>
         </div>

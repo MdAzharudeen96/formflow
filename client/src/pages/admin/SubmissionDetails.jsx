@@ -13,6 +13,7 @@ export default function SubmissionDetails({ submissionId }) {
   const [showRejectForm, setShowRejectForm] = useState(false);
   const [rejectionComment, setRejectionComment] = useState('');
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     async function loadSubmission() {
@@ -34,14 +35,18 @@ export default function SubmissionDetails({ submissionId }) {
   async function handleApprove() {
     try {
       setActionLoading(true);
+      setError('');
+
       const response = await approveSubmission(submissionId);
+
       setSubmission((current) => ({
         ...current,
         status: response.data.status,
       }));
     } catch (err) {
       setError(
-        err.response?.data?.message || 'Unable to approve submission.'
+        err.response?.data?.message ||
+          'Unable to approve submission.'
       );
     } finally {
       setActionLoading(false);
@@ -50,33 +55,60 @@ export default function SubmissionDetails({ submissionId }) {
 
   async function handleReject() {
     if (!rejectionComment.trim()) {
-        setError('Please enter a rejection reason.');
-        return;
+      setError('Please enter a rejection reason.');
+      return;
     }
 
     try {
-        setActionLoading(true);
-        setError('');
+      setActionLoading(true);
+      setError('');
 
-        const response = await rejectSubmission(
+      const response = await rejectSubmission(
         submissionId,
         rejectionComment
-        );
+      );
 
-        setSubmission((current) => ({
+      setSubmission((current) => ({
         ...current,
         status: response.data.status,
         rejectionComment: response.data.rejectionComment,
-        }));
+      }));
 
-        setShowRejectForm(false);
-        setRejectionComment('');
+      setShowRejectForm(false);
+      setRejectionComment('');
     } catch (err) {
-        setError(
-        err.response?.data?.message || 'Unable to reject submission.'
-        );
+      setError(
+        err.response?.data?.message ||
+          'Unable to reject submission.'
+      );
     } finally {
-        setActionLoading(false);
+      setActionLoading(false);
+    }
+  }
+
+  async function copyResponseLink() {
+    const formId =
+      submission?.formId?._id || submission?.formId;
+
+    if (!formId || !submission?._id) {
+      setError('Unable to create the response link.');
+      return;
+    }
+
+    const responseUrl =
+      `${window.location.origin}/forms/${formId}?submission=${submission._id}`;
+
+    try {
+      await navigator.clipboard.writeText(responseUrl);
+
+      setError('');
+      setMessage('Response link copied.');
+
+      setTimeout(() => {
+        setMessage('');
+      }, 2000);
+    } catch {
+      setError('Unable to copy response link.');
     }
   }
 
@@ -94,7 +126,7 @@ export default function SubmissionDetails({ submissionId }) {
     );
   }
 
-  if (error || !submission) {
+  if (error && !submission) {
     return (
       <AdminLayout
         currentPath="/admin/submissions"
@@ -104,6 +136,20 @@ export default function SubmissionDetails({ submissionId }) {
         <section className="empty-page-panel">
           <h3>Unable to load submission</h3>
           <p>{error || 'Submission not found.'}</p>
+        </section>
+      </AdminLayout>
+    );
+  }
+
+  if (!submission) {
+    return (
+      <AdminLayout
+        currentPath="/admin/submissions"
+        eyebrow="Workspace"
+        title="Submission"
+      >
+        <section className="empty-page-panel">
+          <h3>Submission not found</h3>
         </section>
       </AdminLayout>
     );
@@ -120,15 +166,24 @@ export default function SubmissionDetails({ submissionId }) {
           <span className="section-kicker">
             {submission.formId?.title || 'Untitled form'}
           </span>
+
           <h2>Submission Details</h2>
+
           <p>Review the submitted information.</p>
         </div>
       </section>
+
+      {error && (
+        <p className="form-error" role="alert">
+          {error}
+        </p>
+      )}
 
       <section className="submission-detail-card">
         {submission.formId?.fields?.map((field) => (
           <div className="submission-field" key={field._id}>
             <span>{field.label}</span>
+
             <strong>
               {submission.data?.[field._id] !== undefined
                 ? String(submission.data[field._id])
@@ -139,72 +194,122 @@ export default function SubmissionDetails({ submissionId }) {
 
         <div className="submission-field">
           <span>Status</span>
-          <strong className={`status-badge status-${submission.status}`}>
+
+          <strong
+            className={`status-badge status-${submission.status}`}
+          >
             {submission.status}
           </strong>
         </div>
       </section>
 
-      {submission.status === 'submitted' && (
-        <section className="submission-actions">
-            <button
-                type="button"
-                className="submission-approve-button"
-                onClick={handleApprove}
-                disabled={actionLoading}
-            >
-                {actionLoading ? 'Processing...' : 'Approve'}
-            </button>
+      {submission.status === 'rejected' &&
+        submission.rejectionComment && (
+          <section className="rejection-comment-card">
+            <span className="section-kicker">
+              Rejection Comment
+            </span>
+
+            <p>{submission.rejectionComment}</p>
+          </section>
+        )}
+
+      {submission.status === 'rejected' && (
+        <section className="response-link-card">
+          <div>
+            <span className="section-kicker">
+              User response
+            </span>
+
+            <p>
+              Share this link with the user so they can correct
+              and resubmit their response.
+            </p>
 
             <button
-                type="button"
-                className="submission-reject-button"
-                onClick={() => {
-                setError('');
-                setShowRejectForm(true);
-                }}
-                disabled={actionLoading}
+              type="button"
+              className="text-button copy-link-button "
+              onClick={copyResponseLink}
             >
-                Reject
+              Copy Response Link
             </button>
+
+            {message && (
+              <p className="form-success" role="status">
+                {message}
+              </p>
+            )}
+          </div>
+        </section>
+      )}
+
+      {submission.status === 'submitted' && (
+        <section className="submission-actions">
+          <button
+            type="button"
+            className="submission-approve-button"
+            onClick={handleApprove}
+            disabled={actionLoading}
+          >
+            {actionLoading ? 'Processing...' : 'Approve'}
+          </button>
+
+          <button
+            type="button"
+            className="submission-reject-button"
+            onClick={() => {
+              setError('');
+              setShowRejectForm(true);
+            }}
+            disabled={actionLoading}
+          >
+            Reject
+          </button>
         </section>
       )}
 
       {showRejectForm && submission.status === 'submitted' && (
         <section className="reject-form-panel">
-            <h3>Reject submission</h3>
-            <p>Please provide a reason for rejecting this submission.</p>
+          <h3>Reject submission</h3>
 
-            <textarea
+          <p>
+            Please provide a reason for rejecting this submission.
+          </p>
+
+          <textarea
             value={rejectionComment}
-            onChange={(event) => setRejectionComment(event.target.value)}
+            onChange={(event) =>
+              setRejectionComment(event.target.value)
+            }
             placeholder="Enter rejection reason"
             rows="4"
-            />
+          />
 
-            <div className="submission-actions">
-                <button
-                    type="button"
-                    className="submission-cancel-button"
-                    onClick={() => {
-                    setShowRejectForm(false);
-                    setRejectionComment('');
-                    setError('');
-                    }}
-                    disabled={actionLoading}
-                >
-                    Cancel
-                </button>
+          <div className="submission-actions">
+            <button
+              type="button"
+              className="submission-cancel-button"
+              onClick={() => {
+                setShowRejectForm(false);
+                setRejectionComment('');
+                setError('');
+              }}
+              disabled={actionLoading}
+            >
+              Cancel
+            </button>
 
-                <button
-                    type="button"
-                    className="submission-reject-button"
-                    onClick={handleReject}
-                    disabled={actionLoading}
-                >
-                    {actionLoading ? 'Rejecting...' : 'Confirm Reject'}
-                </button>
-            </div>
+            <button
+              type="button"
+              className="submission-reject-button"
+              onClick={handleReject}
+              disabled={actionLoading}
+            >
+              {actionLoading
+                ? 'Rejecting...'
+                : 'Confirm Reject'}
+            </button>
+          </div>
         </section>
       )}
     </AdminLayout>

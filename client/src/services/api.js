@@ -59,6 +59,11 @@ export async function createSubmission(submission) {
   return data;
 }
 
+export async function getSubmission(submissionId) {
+  const { data } = await api.get(`/submissions/${submissionId}`);
+  return data;
+}
+
 export async function submitSubmission(submissionId) {
   const { data } = await api.post(`/submissions/${submissionId}/submit`);
   return data;
@@ -82,4 +87,13 @@ export async function approveSubmission(submissionId) {
 export async function rejectSubmission(submissionId, comment) {
   const { data } = await api.put(`/admin/submissions/${submissionId}/reject`, {comment});
   return data;
+}
+
+export async function updateSubmission(submissionId, data) {
+  const { data: response } = await api.put(
+    `/submissions/${submissionId}`,
+    { data }
+  );
+
+  return response;
 }

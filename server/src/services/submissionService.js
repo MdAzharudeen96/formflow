@@ -91,6 +91,34 @@ export async function createDraft(formId, data) {
   return Submission.create({ formId: form._id, data: normalizeData(form, data), status: 'draft' });
 }
 
+export async function updateSubmission(submissionId, data) {
+  const submission = await getSubmission(submissionId);
+
+  if (!['draft', 'rejected'].includes(submission.status)) {
+    throw validationError(
+      'Only draft or rejected submissions can be edited'
+    );
+  }
+
+  const form = await Form.findById(submission.formId);
+
+  if (!form) {
+    throw Object.assign(new Error('Form not found'), { statusCode: 404 });
+  }
+
+  validateData(form, data, false);
+
+  submission.data = normalizeData(form, data);
+
+  // When editing a rejected submission, keep it rejected
+  // until the user explicitly submits it again.
+  submission.status = 'draft';
+
+  await submission.save();
+
+  return submission;
+}
+
 export async function getSubmission(submissionId) {
   if (!mongoose.isValidObjectId(submissionId)) {
     throw Object.assign(new Error('Submission not found'), { statusCode: 404 });
@@ -164,6 +192,7 @@ export async function rejectSubmission(submissionId, comment) {
     throw error;
   }
 
+  submission.rejectionComment = comment.trim();
   submission.status = 'rejected';
   await submission.save();
 

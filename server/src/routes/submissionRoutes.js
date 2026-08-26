@@ -3,6 +3,7 @@ import {
   getPublicFormController,
   createSubmission,
   getSubmissionController,
+  updateSubmissionController,
   submitSubmissionController,
   getAdminSubmissionsController,
   getAdminSubmissionController,
@@ -15,5 +16,6 @@ const router = Router();
 router.post('/', createSubmission);
 router.get('/:id', getSubmissionController);
 router.post('/:id/submit', submitSubmissionController);
+router.put('/:id', updateSubmissionController);
 
 export default router;
