@@ -85,10 +85,21 @@ export async function getPublicForm(formId) {
 
 export async function createDraft(formId, data) {
   const form = await Form.findById(getFormId(formId));
-  if (!form) throw Object.assign(new Error('Form not found'), { statusCode: 404 });
+
+  if (!form) {
+    throw Object.assign(new Error('Form not found'), {
+      statusCode: 404,
+    });
+  }
+
   validateData(form, data, false);
 
-  return Submission.create({ formId: form._id, data: normalizeData(form, data), status: 'draft' });
+  return Submission.create({
+    formId: form._id,
+    data: normalizeData(form, data),
+    status: 'draft',
+    draftAt: new Date(),
+  });
 }
 
 export async function updateSubmission(submissionId, data) {
@@ -103,16 +114,18 @@ export async function updateSubmission(submissionId, data) {
   const form = await Form.findById(submission.formId);
 
   if (!form) {
-    throw Object.assign(new Error('Form not found'), { statusCode: 404 });
+    throw Object.assign(new Error('Form not found'), {
+      statusCode: 404,
+    });
   }
 
   validateData(form, data, false);
 
   submission.data = normalizeData(form, data);
 
-  // When editing a rejected submission, keep it rejected
-  // until the user explicitly submits it again.
+  // Editing a rejected submission moves it back to draft.
   submission.status = 'draft';
+  submission.draftAt = new Date();
 
   await submission.save();
 
@@ -136,6 +149,8 @@ export async function submitSubmission(submissionId) {
   validateData(form, submission.data, true);
 
   submission.status = 'submitted';
+  submission.submittedAt = new Date();
+
   return submission.save();
 }
 
@@ -166,6 +181,8 @@ export async function approveSubmission(submissionId) {
   }
 
   submission.status = 'approved';
+  submission.approvedAt = new Date();
+
   await submission.save();
 
   return submission;
@@ -194,6 +211,8 @@ export async function rejectSubmission(submissionId, comment) {
 
   submission.rejectionComment = comment.trim();
   submission.status = 'rejected';
+  submission.rejectedAt = new Date();
+
   await submission.save();
 
   return submission;

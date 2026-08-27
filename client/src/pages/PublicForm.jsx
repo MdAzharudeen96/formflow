@@ -331,7 +331,7 @@ export default function PublicForm({ formId }) {
                 type="submit"
                 disabled={Boolean(action)}
               >
-                {action === 'submit' ? 'Submitting...' : 'Submit Again'}
+                {action === 'submit' ? 'Submitting...' : isRejected ? 'Submit Again' : 'Submit'}
                 <span aria-hidden="true">→</span>
               </button>
             </div>
@@ -341,11 +341,11 @@ export default function PublicForm({ formId }) {
         {submissionId && !isEditable && (
           <div className="submission-status-message">
             <strong>
-              This submission is {submissionStatus}.
+              This Form is {submissionStatus}.
             </strong>
 
             <p>
-              This submission can no longer be edited.
+              This Form can no longer be edited.
             </p>
           </div>
         )}

@@ -210,21 +210,18 @@ export default function Dashboard() {
                     ).toLocaleString()}
                   </p>
                 </div>
-
-                <div className="activity-right">
-                  <span
-                    className={`status-badge status-${submission.status}`}
-                  >
+                <span
+                  className={`status-badge status-${submission.status}`}
+                >
                     {submission.status}
-                  </span>
+                </span>
 
-                  <a
-                    href={`/admin/submissions/${submission._id}`}
-                    className="button button-secondary"
-                  >
+                <a
+                  href={`/admin/submissions/${submission._id}`}
+                  className="button button-secondary"
+                >
                     View
-                  </a>
-                </div>
+                </a>
               </article>
             ))}
           </div>

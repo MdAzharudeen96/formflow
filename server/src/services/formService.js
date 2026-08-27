@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import Form from '../models/Form.js';
+import Submission from '../models/Submission.js';
 
 const allowedFieldTypes = new Set(['text', 'number', 'dropdown', 'date']);
 
@@ -12,8 +13,10 @@ function validateFormInput({ title, fields }) {
     throw createValidationError('Form title is required');
   }
 
-  if (!Array.isArray(fields)) {
-    throw createValidationError('Fields must be an array');
+  if (!Array.isArray(fields) || fields.length === 0) {
+    throw createValidationError(
+      'At least one field is required to create a form'
+    );
   }
 
   fields.forEach((field) => {
@@ -90,4 +93,33 @@ export async function updateForm(userId, formId, input) {
   }));
 
   return form.save();
+}
+
+export async function deleteForm(userId, formId) {
+  if (!mongoose.isValidObjectId(formId)) {
+    throw notFoundError();
+  }
+
+  const form = await Form.findOne({
+    _id: formId,
+    createdBy: userId,
+  });
+
+  if (!form) {
+    throw notFoundError();
+  }
+
+  const submissionExists = await Submission.exists({
+    formId: form._id,
+  });
+
+  if (submissionExists) {
+    throw createValidationError(
+      'This form cannot be deleted because it has submissions.'
+    );
+  }
+
+  await Form.deleteOne({ _id: form._id });
+
+  return form;
 }

@@ -1,9 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import AdminLayout from '../../components/AdminLayout';
-import { getForms } from '../../services/api';
+import { getForms, deleteForm } from '../../services/api';
+
+const ITEMS_PER_PAGE = 5;
 
 export default function Forms() {
   const [forms, setForms] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [copiedFormId, setCopiedFormId] = useState('');
@@ -19,6 +22,29 @@ export default function Forms() {
       )
       .finally(() => setLoading(false));
   }, []);
+
+  async function handleDeleteForm(form) {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${form.title}"?`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await deleteForm(form._id);
+
+      setForms((currentForms) =>
+        currentForms.filter((item) => item._id !== form._id)
+      );
+    } catch (requestError) {
+      setError(
+        requestError.response?.data?.message ||
+          'Unable to delete the form.'
+      );
+    }
+  }
 
   async function copyFormLink(formId) {
     const formUrl = `${window.location.origin}/forms/${formId}`;
@@ -36,6 +62,30 @@ export default function Forms() {
     }
   }
 
+  const totalPages = Math.ceil(
+    forms.length / ITEMS_PER_PAGE
+  );
+
+  const paginatedForms = useMemo(() => {
+    const startIndex =
+      (currentPage - 1) * ITEMS_PER_PAGE;
+
+    return forms.slice(
+      startIndex,
+      startIndex + ITEMS_PER_PAGE
+    );
+  }, [forms, currentPage]);
+
+  function goToPreviousPage() {
+    setCurrentPage((page) => Math.max(page - 1, 1));
+  }
+
+  function goToNextPage() {
+    setCurrentPage((page) =>
+      Math.min(page + 1, totalPages)
+    );
+  }
+
   return (
     <AdminLayout
       currentPath="/admin/forms"
@@ -44,11 +94,15 @@ export default function Forms() {
     >
       <section className="page-intro">
         <div>
-          <span className="section-kicker">Form library</span>
+          <span className="section-kicker">
+            Form library
+          </span>
 
-          <h2>Forms</h2>
+          <h2>Your forms, all in one place</h2>
 
-          <p>Manage your FormFlow forms.</p>
+          <p>
+            Manage your FormFlow forms.
+          </p>
         </div>
 
         <a
@@ -86,66 +140,109 @@ export default function Forms() {
           </section>
         )}
 
-      {!isLoading && forms.length > 0 && (
-        <section className="forms-list">
-          {forms.map((form) => (
-            <article
-              className="form-list-item"
-              key={form._id}
-            >
-              <div>
-                <h3>{form.title}</h3>
+      {!isLoading &&
+        !error &&
+        paginatedForms.length > 0 && (
+          <>
+            <section className="forms-list">
+              {paginatedForms.map((form) => (
+                <article
+                  className="form-list-item"
+                  key={form._id}
+                >
+                  <div>
+                    <h3>{form.title}</h3>
 
-                <p>
-                  {form.description ||
-                    'No description provided.'}
-                </p>
-              </div>
+                    <p>
+                      {form.description ||
+                        'No description provided.'}
+                    </p>
+                  </div>
 
-              <div className="form-list-meta">
-                <span>
-                  {form.fields.length}{' '}
-                  {form.fields.length === 1
-                    ? 'field'
-                    : 'fields'}
+                  <div className="form-list-meta">
+                    <span>
+                      {form.fields.length}{' '}
+                      {form.fields.length === 1
+                        ? 'field'
+                        : 'fields'}
+                    </span>
+
+                    <small>
+                      Created:{' '}
+                      {new Date(
+                        form.createdAt
+                      ).toLocaleDateString('en-US', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                      })}
+                    </small>
+
+                    <div className="form-list-actions">
+                      <a
+                        className="text-button"
+                        href={`/admin/forms/${form._id}/edit`}
+                      >
+                        Edit
+                      </a>
+
+                      <button
+                        type="button"
+                        className="text-button copy-link-button"
+                        onClick={() =>
+                          copyFormLink(form._id)
+                        }
+                      >
+                        {copiedFormId === form._id
+                          ? '✓ Link Copied'
+                          : 'Copy Form Link'}
+                      </button>
+
+                      <button
+                        type="button"
+                        className="text-button delete-form-button"
+                        onClick={() => handleDeleteForm(form)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </section>
+
+            {totalPages > 1 && (
+              <nav
+                className="submission-pagination"
+                aria-label="Form pagination"
+              >
+                <button
+                  type="button"
+                  className="pagination-button"
+                  onClick={goToPreviousPage}
+                  disabled={currentPage === 1}
+                >
+                  ← Previous
+                </button>
+
+                <span className="pagination-info">
+                  Page {currentPage} of {totalPages}
                 </span>
 
-                <small>
-                  Created:{' '}
-                  {new Date(
-                    form.createdAt
-                  ).toLocaleDateString('en-US', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
-                  })}
-                </small>
-
-                <div className="form-list-actions">
-                  <a
-                    className="text-button"
-                    href={`/admin/forms/${form._id}/edit`}
-                  >
-                    Edit
-                  </a>
-
-                  <button
-                    type="button"
-                    className="text-button copy-link-button"
-                    onClick={() =>
-                      copyFormLink(form._id)
-                    }
-                  >
-                    {copiedFormId === form._id
-                      ? '✓ Link Copied'
-                      : 'Copy Form Link'}
-                  </button>
-                </div>
-              </div>
-            </article>
-          ))}
-        </section>
-      )}
+                <button
+                  type="button"
+                  className="pagination-button"
+                  onClick={goToNextPage}
+                  disabled={
+                    currentPage === totalPages
+                  }
+                >
+                  Next →
+                </button>
+              </nav>
+            )}
+          </>
+        )}
     </AdminLayout>
   );
 }

@@ -14,6 +14,7 @@ export default function SubmissionDetails({ submissionId }) {
   const [rejectionComment, setRejectionComment] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [showRejectConfirm, setShowRejectConfirm] = useState(false);
 
   useEffect(() => {
     async function loadSubmission() {
@@ -76,6 +77,7 @@ export default function SubmissionDetails({ submissionId }) {
 
       setShowRejectForm(false);
       setRejectionComment('');
+      return true;
     } catch (err) {
       setError(
         err.response?.data?.message ||
@@ -302,15 +304,72 @@ export default function SubmissionDetails({ submissionId }) {
             <button
               type="button"
               className="submission-reject-button"
-              onClick={handleReject}
+              onClick={() => {
+                if (!rejectionComment.trim()) {
+                  setError('Please enter a rejection reason.');
+                  return;
+                }
+
+                setError('');
+                setShowRejectConfirm(true);
+              }}
               disabled={actionLoading}
             >
-              {actionLoading
-                ? 'Rejecting...'
-                : 'Confirm Reject'}
+              Confirm Reject
             </button>
           </div>
         </section>
+      )}
+
+      {showRejectConfirm && (
+        <div className="confirmation-overlay">
+          <section
+            className="confirmation-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="reject-confirmation-title"
+          >
+            <span className="section-kicker">Confirm action</span>
+
+            <h3 id="reject-confirmation-title">
+              Reject Submission?
+            </h3>
+
+            <p>
+              Are you sure you want to reject this submission?
+            </p>
+
+            <p className="confirmation-note">
+              The user will be able to edit the response and submit it again.
+            </p>
+
+            <div className="confirmation-actions">
+              <button
+                type="button"
+                className="submission-cancel-button"
+                onClick={() => setShowRejectConfirm(false)}
+                disabled={actionLoading}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="submission-reject-button"
+                onClick={async () => {
+                  const success = await handleReject();
+                  
+                  if(success){
+                    setShowRejectConfirm(false);
+                  }
+                }}
+                disabled={actionLoading}
+              >
+                {actionLoading ? 'Rejecting...' : 'Yes, Reject'}
+              </button>
+            </div>
+          </section>
+        </div>
       )}
     </AdminLayout>
   );

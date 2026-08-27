@@ -5,6 +5,7 @@ import {
   getFormController,
   getForms,
   updateFormController,
+  deleteFormController,
 } from '../controllers/formController.js';
 
 const router = Router();
@@ -14,5 +15,6 @@ router.get('/', getForms);
 router.post('/', createFormController);
 router.get('/:id', getFormController);
 router.put('/:id', updateFormController);
+router.delete('/:id', deleteFormController);
 
 export default router;

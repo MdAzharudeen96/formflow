@@ -60,9 +60,29 @@ export default function FormBuilder({ formId }) {
   }
 
   function validate() {
-    if (!title.trim()) return 'Form title is required.';
-    if (fields.some((field) => !field.label.trim())) return 'Field label is required.';
-    if (fields.some((field) => field.type === 'dropdown' && (!field.options.length || field.options.some((option) => !option.trim())))) return 'Dropdown must have at least one option.';
+    if (!title.trim()) {
+      return 'Form title is required.';
+    }
+
+    if (fields.length === 0) {
+      return 'At least one field is required.';
+    }
+
+    if (fields.some((field) => !field.label.trim())) {
+      return 'Field label is required.';
+    }
+
+    if (
+      fields.some(
+        (field) =>
+          field.type === 'dropdown' &&
+          (!field.options.length ||
+            field.options.some((option) => !option.trim()))
+      )
+    ) {
+      return 'Dropdown must have at least one option.';
+    }
+
     return '';
   }
 

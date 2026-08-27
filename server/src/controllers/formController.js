@@ -1,5 +1,5 @@
 import { sendSuccess } from '../utils/apiResponse.js';
-import { createForm, getForm, listForms, updateForm } from '../services/formService.js';
+import { createForm, getForm, listForms, updateForm, deleteForm } from '../services/formService.js';
 
 export async function getForms(request, response) {
   const forms = await listForms(request.user.userId);
@@ -19,4 +19,10 @@ export async function getFormController(request, response) {
 export async function updateFormController(request, response) {
   const form = await updateForm(request.user.userId, request.params.id, request.body ?? {});
   return sendSuccess(response, 'Form updated successfully', { form });
+}
+
+export async function deleteFormController(request, response) {
+  await deleteForm(request.user.userId, request.params.id);
+
+  return sendSuccess(response, 'Form deleted successfully');
 }

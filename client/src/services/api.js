@@ -49,6 +49,11 @@ export async function updateForm(formId, form) {
   return data;
 }
 
+export async function deleteForm(formId) {
+  const { data } = await api.delete(`/forms/${formId}`);
+  return data;
+}
+
 export async function getPublicForm(formId) {
   const { data } = await api.get(`/public/forms/${formId}`);
   return data;
