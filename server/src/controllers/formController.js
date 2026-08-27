@@ -2,7 +2,7 @@ import { sendSuccess } from '../utils/apiResponse.js';
 import { createForm, getForm, listForms, updateForm, deleteForm } from '../services/formService.js';
 
 export async function getForms(request, response) {
-  const forms = await listForms(request.user.userId);
+  const forms = await listForms();
   return sendSuccess(response, 'Forms fetched successfully', { forms });
 }
 

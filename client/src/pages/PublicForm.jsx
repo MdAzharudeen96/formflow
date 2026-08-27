@@ -178,6 +178,7 @@ export default function PublicForm({ formId }) {
 
       await submitSubmission(currentSubmissionId);
 
+      setSubmissionStatus('submitted');
       setMessage('Form submitted successfully.');
     } catch (requestError) {
       setPageError(

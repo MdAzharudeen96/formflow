@@ -38,8 +38,8 @@ function notFoundError() {
   return Object.assign(new Error('Form not found'), { statusCode: 404 });
 }
 
-export async function listForms(userId) {
-  return Form.find({ createdBy: userId }).sort({ createdAt: -1 });
+export async function listForms() {
+  return Form.find().sort({ createdAt: -1 });
 }
 
 export async function createForm(userId, input) {
