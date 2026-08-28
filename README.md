@@ -499,7 +499,7 @@ Start the backend:
 
 ```bash
 cd server
-npm run dev
+npm start --workspace server
 ```
 
 Start the frontend in another terminal:
